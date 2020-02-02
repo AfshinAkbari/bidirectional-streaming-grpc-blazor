@@ -1,0 +1,79 @@
+﻿@page "/fetchdata"
+@using Grpc.Core
+@using BlazorGrpc
+@inject WeatherForecasts.WeatherForecastsClient WeatherForecastsClient
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server with bidirectional grpc streaming.</p>
+<button @onclick="GetData">Refresh</button>
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@functions {
+    private IList<WeatherForecast> forecasts;
+    private AsyncDuplexStreamingCall<Empty,WeatherReply> stream;
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("start");
+        stream = WeatherForecastsClient.GetWeather();
+        Console.WriteLine("lisening");
+
+       
+        var task = Task.Run(async () =>
+        {
+            Console.WriteLine("waite");
+            while (await stream.ResponseStream.MoveNext())
+            {
+                try
+                {
+
+                    Console.WriteLine("get new data");
+                    forecasts = stream.ResponseStream.Current.Forecasts;
+                    await InvokeAsync(() => { this.StateHasChanged(); });
+                    Console.WriteLine("lisening");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            Console.WriteLine("done");
+        });
+        await GetData();
+    }
+
+    private async Task GetData()
+    {
+        await stream.RequestStream.WriteAsync(new Empty());
+
+    }
+}
+
