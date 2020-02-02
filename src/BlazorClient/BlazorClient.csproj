@@ -19,6 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Share .proto file with backend server to ensure consistency. Alternatively you could copy it into this project. -->
-    <Protobuf Include="..\SampleBackendGrpcServer\Protos\weather.proto" />
+    <Protobuf Include="..\Server\Protos\weather.proto" />
   </ItemGroup>
 </Project>

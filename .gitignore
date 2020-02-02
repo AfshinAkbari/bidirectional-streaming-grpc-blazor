@@ -3,3 +3,6 @@
 ################################################################################
 
 /src/.vs/BlazorGrpcBidirectionalStreaming/v16/Server/sqlite3
+/src/Server/obj/Debug/netcoreapp3.1
+/src/BlazorClient/obj
+/src/Server/obj
