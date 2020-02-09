@@ -48,9 +48,8 @@ namespace Server.Services
             }
 
         }
-        private async void Trace(string message)
+        private void Trace(string message)
         {
-
             Console.WriteLine($"{DateTime.Now:0:HH:mm:ss,fff}\t{message}");
         }
 
